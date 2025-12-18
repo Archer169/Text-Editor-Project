@@ -15,7 +15,7 @@ LRESULT CALLBACK WndProc
 	static int Height = 200;
 
 	static int Sizes = 20;
-	static bool Command = true;
+	static boolean Command = TRUE;
 
 	switch (msg)
 	{
@@ -31,18 +31,23 @@ LRESULT CALLBACK WndProc
 
 		case WM_CHAR:
 		{
-			if (wParam == '\b')
+			if (Command == TRUE)
+			{
+				switch (wParam)
+				{
+					case '+':
+						Sizes++;
+						Command = FALSE;
+				}
+			}
+			else if (wParam == '\b')
 			{
 				if (TextLength > 0) Text[--TextLength] = '\0';
 			}
+			else if (wParam == ':') Command = TRUE;
 			else
 			{
 				Text[TextLength++] = (char)wParam;
-
-				if (Text[TextLength] == ':')
-				{
-					
-				}
 
 				Text[TextLength] = '\0';
 			}
