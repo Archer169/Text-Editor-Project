@@ -14,6 +14,9 @@ LRESULT CALLBACK WndProc
 	static int Width = 200;
 	static int Height = 200;
 
+	static int Sizes = 20;
+	static bool Command = true;
+
 	switch (msg)
 	{
 		case WM_SIZE:
@@ -35,9 +38,14 @@ LRESULT CALLBACK WndProc
 			else
 			{
 				Text[TextLength++] = (char)wParam;
+
+				if (Text[TextLength] == ':')
+				{
+					
+				}
+
 				Text[TextLength] = '\0';
 			}
-
 
 			InvalidateRect(hWnd, NULL, TRUE); // Force redraw
 
@@ -51,7 +59,7 @@ LRESULT CALLBACK WndProc
 
 			HFONT hFont = CreateFont
 			(
-				-200, 0, 0, 0,
+				-Sizes, 0, 0, 0,
 				FW_NORMAL,
 				FALSE, 
 				FALSE, 
@@ -68,6 +76,7 @@ LRESULT CALLBACK WndProc
 			HBRUSH hBrush = CreateSolidBrush(RGB(25, 25, 25));
 
 			RECT Rect = {Width / 4, Height / 8, Width - Width / 4, Height - Height / 8}; // Define drawing rectangle
+
 			DrawText(hdc, Text, TextLength, &Rect, DT_LEFT | DT_TOP | DT_WORDBREAK);
 			FrameRect(hdc, &Rect, hBrush);
 
