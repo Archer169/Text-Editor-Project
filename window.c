@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <stdio.h>
 
 LRESULT CALLBACK WndProc
 (
@@ -15,7 +16,7 @@ LRESULT CALLBACK WndProc
 	static int Height = 200;
 
 	static int Sizes = 20;
-	static boolean Command = TRUE;
+	static boolean Command = FALSE;
 
 	switch (msg)
 	{
@@ -33,18 +34,28 @@ LRESULT CALLBACK WndProc
 		{
 			if (Command == TRUE)
 			{
-				switch (wParam)
+				switch ((char)wParam)
 				{
 					case '+':
-						Sizes++;
+						Sizes += 5;
 						Command = FALSE;
+						break;
+
+					case '-':
+						Sizes -= 5;
+						Command = FALSE;
+						break;
+					
+					default:
+						Command = FALSE;
+						break;
 				}
 			}
 			else if (wParam == '\b')
 			{
 				if (TextLength > 0) Text[--TextLength] = '\0';
 			}
-			else if (wParam == ':') Command = TRUE;
+			else if (wParam == '`') Command = TRUE;
 			else
 			{
 				Text[TextLength++] = (char)wParam;
@@ -85,8 +96,41 @@ LRESULT CALLBACK WndProc
 			DrawText(hdc, Text, TextLength, &Rect, DT_LEFT | DT_TOP | DT_WORDBREAK);
 			FrameRect(hdc, &Rect, hBrush);
 
+			HFONT GUIFont = CreateFont
+			(
+				-30, 0, 0, 0,
+				FW_NORMAL,
+				FALSE, 
+				FALSE, 
+				FALSE,
+				DEFAULT_CHARSET,
+				OUT_DEFAULT_PRECIS,
+				CLIP_DEFAULT_PRECIS,
+				DEFAULT_QUALITY,
+				FIXED_PITCH | FF_MODERN,
+				"Garamond"
+			);
+
+			HFONT oldGUIFont = (HFONT)SelectObject(hdc, GUIFont);
+
+			RECT Recta = {20, 20, 120, 60}; // Define drawing rectangle
+
+			char TextSize[32];
+			sprintf(TextSize, "%d", Sizes);
+
+			DrawText(hdc, TextSize, strlen(TextSize), &Recta, DT_LEFT | DT_TOP | DT_WORDBREAK);
+			FrameRect(hdc, &Recta, hBrush);
+
+			RECT Rectan = {140, 20, 300, 60}; // Define drawing rectangle
+			
+			DrawText(hdc, "Garamond", 8, &Rectan, DT_LEFT | DT_TOP | DT_WORDBREAK);
+			FrameRect(hdc, &Rectan, hBrush);
+
 			SelectObject(hdc, oldFont);
     		DeleteObject(hFont);
+
+			SelectObject(hdc, oldGUIFont);
+    		DeleteObject(GUIFont);
 
 			EndPaint(hWnd, &ps);
 			return 0;
